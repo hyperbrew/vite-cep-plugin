@@ -1,10 +1,12 @@
-import os from "os";
-import path from "path";
+import * as os from "os";
+import * as path from "path";
 import { execSync } from "child_process";
 
 import { removeIfExists, safeCreate, log } from "./lib";
 import { CEP_Config } from "../cep-config";
-import fs, { existsSync } from "fs";
+import * as fs from "fs";
+
+const { existsSync } = fs;
 
 export const signZXP = (config: CEP_Config, input: string, zxpDir: string) => {
   const zxpCmd = os.platform() == "win32" ? `ZXPSignCmd` : `./ZXPSignCmd`;

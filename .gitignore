@@ -1,3 +1,4 @@
 node_modules
 *.p12
 /lib
+yarn-error.log
