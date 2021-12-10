@@ -1,9 +1,9 @@
-import os from "os";
-import path from "path";
+import * as os from "os";
+import * as path from "path";
 
 import copyN, { copyModules, unique } from "./copy-node";
 
-import fs from "fs-extra";
+import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
 
 import { log, conColors, posix, resetLog } from "./lib/lib";
@@ -48,7 +48,7 @@ const injectRequire = fs.readFileSync(
   }
 );
 
-let foundPackages = [];
+let foundPackages: string[] = [];
 
 interface CepOptions {
   cepConfig: CEP_Config;
@@ -92,7 +92,7 @@ export const cep = (opts: CepOptions) => {
 
   return {
     name: "cep",
-    transformIndexHtml(code: string, opts) {
+    transformIndexHtml(code: string, opts: any) {
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
       if (isDev) {
@@ -107,9 +107,11 @@ export const cep = (opts: CepOptions) => {
       const jsFileNameMatch = code.match(/(src=\".*.js\")/);
       const jsFileName =
         jsFileNameMatch &&
+        //@ts-ignore
         jsFileNameMatch.pop().replace('src="', "").replace('"', "");
 
       // TODO: better require transformations
+      //@ts-ignore
       const jsName = jsFileName.substr(1);
 
       let newCode = opts.bundle[jsName].code;
@@ -119,6 +121,7 @@ export const cep = (opts: CepOptions) => {
       );
       if (allRequires) {
         const requireNames = allRequires.map((req: string) =>
+          //@ts-ignore
           req.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0].replace(/\"/g, "")
         );
         const copyModules = requireNames.filter(
@@ -133,6 +136,7 @@ export const cep = (opts: CepOptions) => {
       );
       matches?.map((match: string) => {
         const jsPath = match.match(/\".*\"/);
+        //@ts-ignore
         const jsBasename = path.basename(jsPath[0]);
         if (jsPath) {
           newCode = newCode.replace(
@@ -157,7 +161,9 @@ export const cep = (opts: CepOptions) => {
       const html = htmlTemplate({
         ...cepConfig,
         debugReact,
+        //@ts-ignore
         jsFileName,
+        //@ts-ignore
         cssFileNames,
         injectRequire,
       });
@@ -172,7 +178,9 @@ export const cep = (opts: CepOptions) => {
         console.clear();
         console.log(`${conColors.green}CEP Panels Served at:`);
         console.log("");
+        //@ts-ignore
         Object.keys(config.build.rollupOptions.input).map((key: string) => {
+          //@ts-ignore
           const filePath = config.build.rollupOptions.input[key];
           const relativePath = path.relative(config.root, filePath);
           const destPath = path.resolve(config.build.outDir, relativePath);
@@ -216,6 +224,7 @@ export const cep = (opts: CepOptions) => {
       );
 
       // fix paths
+      //@ts-ignore
       bundle[jsFileName].code = bundle[jsFileName].code.replace(
         /(\/assets\/)/g,
         "./assets/"
@@ -299,6 +308,7 @@ export const jsxInclude = (opts = {}) => {
     name: "extendscript-include-resolver",
     generateBundle: (output: any, bundle: any) => {
       const esFile = Object.keys(bundle).pop();
+      //@ts-ignore
       bundle[esFile].code = [...foundIncludes, bundle[esFile].code].join("\r");
     },
     transform: (code: string, id: string) => {
