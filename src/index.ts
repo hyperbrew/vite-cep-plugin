@@ -1,7 +1,7 @@
 import * as os from "os";
 import * as path from "path";
 
-import copyN, { copyModules, unique } from "./copy-node";
+import { copyModules, unique } from "./copy-node";
 
 import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
@@ -61,7 +61,6 @@ interface CepOptions {
   zxpDir: string;
   packages: string[];
 }
-export const copyNode = copyN;
 export const cep = (opts: CepOptions) => {
   const {
     cepConfig,

@@ -1,5 +1,5 @@
-import os from "os";
-import fs from "fs-extra";
+import * as os from "os";
+import * as fs from "fs-extra";
 
 export const conColors = {
   white: "\u001b[0m",

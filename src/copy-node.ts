@@ -1,11 +1,17 @@
-import path from "path";
-import fs from "fs-extra";
+import * as path from "path";
+import * as fs from "fs-extra";
 
-export const unique = (array) => {
-  return array.filter((v, i, a) => a.indexOf(v) === i);
+export const unique = (array: any) => {
+  return array.filter((v: string, i: number, a: string) => a.indexOf(v) === i);
 };
 
-const nodeSolve = ({ src, pkg, keepDevDependencies }) => {
+interface NodeSolveArgs {
+  src: string;
+  pkg: string;
+  keepDevDependencies: boolean;
+}
+
+const nodeSolve = ({ src, pkg, keepDevDependencies }: NodeSolveArgs) => {
   let allDependencies = [pkg];
   const fullPath = path.join(src, "node_modules", pkg);
   // console.log(`getting pkgs for ${fullPath}`);
@@ -31,7 +37,19 @@ const nodeSolve = ({ src, pkg, keepDevDependencies }) => {
   return allDependencies || [];
 };
 
-export const copyModules = ({ packages, src, dest, symlink }) => {
+interface CopyModulesArgs {
+  packages: string[];
+  src: string;
+  dest: string;
+  symlink: boolean;
+}
+
+export const copyModules = ({
+  packages,
+  src,
+  dest,
+  symlink,
+}: CopyModulesArgs) => {
   const allPkg = packages.flatMap((pkg) =>
     nodeSolve({ src, pkg, keepDevDependencies: false })
   );
@@ -42,7 +60,7 @@ export const copyModules = ({ packages, src, dest, symlink }) => {
     } Dependencies) : ${packages.join(",")}`
   );
   fs.ensureDirSync(path.join(dest, "node_modules"));
-  uniqePkg.map((pkg) => {
+  uniqePkg.map((pkg: string) => {
     const fullSrcPath = path.join(process.cwd(), src, "node_modules", pkg);
     const fullDstPath = path.join(process.cwd(), dest, "node_modules", pkg);
     fs.ensureDirSync(path.dirname(fullDstPath));
@@ -54,7 +72,12 @@ export const copyModules = ({ packages, src, dest, symlink }) => {
   });
 };
 
-const rollupNodeCopyPlugin = ({ packages, src, dest, symlink }) => {
+const rollupNodeCopyPlugin = ({
+  packages,
+  src,
+  dest,
+  symlink,
+}: CopyModulesArgs) => {
   return {
     name: "copy-node-modules",
     buildEnd: async () => {
