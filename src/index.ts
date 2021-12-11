@@ -15,6 +15,8 @@ import { htmlTemplate } from "./templates/html-template";
 import { ResolvedConfig } from "vite";
 import { menuHtmlTemplate } from "./templates/menu-html-template";
 import { CEP_Config } from "./cep-config";
+// export { CEP_Config } from "./cep-config";
+export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
 
 const homedir = os.homedir();
