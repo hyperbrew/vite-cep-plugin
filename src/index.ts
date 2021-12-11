@@ -6,7 +6,7 @@ import { copyModules, unique } from "./copy-node";
 import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
 
-import { requirejs } from "./lib/require-js";
+// import { requirejs } from "./lib/require-js";
 
 import { log, conColors, posix, resetLog } from "./lib/lib";
 import { signZXP } from "./lib/zxp";
@@ -45,7 +45,12 @@ const makeSymlink = (dist: string, dest: string) => {
   }
 };
 
-const injectRequire = requirejs;
+const injectRequire = fs.readFileSync(
+  path.join(__dirname, "./lib/require-js.js"),
+  {
+    encoding: "utf-8",
+  }
+);
 
 let foundPackages: string[] = [];
 
