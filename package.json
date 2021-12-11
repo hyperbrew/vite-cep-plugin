@@ -2,7 +2,8 @@
   "name": "vite-cep-plugin",
   "version": "0.0.1",
   "description": "A Vite Plugin for building Adobe CEP Extension Panels",
-  "main": "index.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "git@github.com:hyperbrew/vite-cep-plugin.git",
   "license": "MIT",
   "scripts": {
