@@ -10,6 +10,10 @@ export const extensionTemplate = ({
   panelDisplayName,
   width,
   height,
+  minWidth,
+  minHeight,
+  maxWidth,
+  maxHeight,
   iconNormal,
   iconDarkNormal,
   iconNormalRollOver,
@@ -32,10 +36,18 @@ export const extensionTemplate = ({
     <Type>${type}</Type>
     ${panelDisplayName ? `<Menu>${panelDisplayName}</Menu>` : ""}
     <Geometry>
-      <Size>
+      ${width && height ? `<Size>
         <Width>${width}</Width>
         <Height>${height}</Height>
-      </Size>
+      </Size>` : ''}
+      ${maxWidth && maxHeight ? `<MaxSize>
+        <Width>${maxWidth}</Width>
+        <Height>${maxHeight}</Height>
+      </MaxSize>`: ''}
+      ${minWidth && minHeight ? `<MinSize>
+        <Width>${minWidth}</Width>
+        <Height>${minHeight}</Height>
+      </MinSize>`: ''}
     </Geometry>
     <Icons>
       <Icon Type="Normal">${iconNormal}</Icon>

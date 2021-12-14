@@ -46,6 +46,10 @@ export interface CEP_Panel {
   autoVisible: boolean;
   width?: number;
   height?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  minWidth?: number;
+  minHeight?: number;
 }
 
 export interface CEP_Extended_Panel extends CEP_Panel {
@@ -80,6 +84,10 @@ export interface CEP_Config {
   scriptPath: string;
   width?: number;
   height?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  minWidth?: number;
+  minHeight?: number;
 
   panels: CEP_Panel[];
 
