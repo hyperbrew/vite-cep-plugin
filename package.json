@@ -1,5 +1,5 @@
 {
-  "name": "@hyperbrew/vite-cep-plugin",
+  "name": "vite-cep-plugin",
   "version": "0.0.1",
   "description": "A Vite Plugin for building Adobe CEP Extension Panels",
   "main": "lib/index.js",
@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "publish": "npm publish --access public"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
