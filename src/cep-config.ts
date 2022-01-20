@@ -50,6 +50,7 @@ export interface CEP_Panel {
   maxHeight?: number;
   minWidth?: number;
   minHeight?: number;
+  scriptPath?: string;
 }
 
 export interface CEP_Extended_Panel extends CEP_Panel {
@@ -81,7 +82,7 @@ export interface CEP_Config {
   iconDarkNormalRollOver?: string;
   iconNormalRollOver?: string;
   parameters: CEF_Command[];
-  scriptPath: string;
+  scriptPath?: string;
   width?: number;
   height?: number;
   maxWidth?: number;

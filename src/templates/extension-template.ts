@@ -18,12 +18,13 @@ export const extensionTemplate = ({
   iconDarkNormal,
   iconNormalRollOver,
   iconDarkNormalRollOver,
-}: CEP_Extended_Panel) => `
-<Extension Id="${id}.${name}">
-<DispatchInfo >
+  scriptPath,
+}: CEP_Extended_Panel) => `<Extension Id="${id}.${name}">
+<DispatchInfo>
   <Resources>
-    <MainPath>${mainPath}</MainPath>
-    <CEFCommandLine>
+    <MainPath>${mainPath}</MainPath>${
+  (scriptPath && `<ScriptPath>${scriptPath}</ScriptPath>`) || ""
+}<CEFCommandLine>
       ${parameters
         .map((item) => `<Parameter>${item.toString()}</Parameter>`)
         .join("\n")}
@@ -35,20 +36,28 @@ export const extensionTemplate = ({
   <UI>
     <Type>${type}</Type>
     ${panelDisplayName ? `<Menu>${panelDisplayName}</Menu>` : ""}
-    <Geometry>
-      ${width && height ? `<Size>
+    <Geometry>${
+      width && height
+        ? `<Size>
         <Width>${width}</Width>
         <Height>${height}</Height>
-      </Size>` : ''}
-      ${maxWidth && maxHeight ? `<MaxSize>
+      </Size>`
+        : ""
+    }${
+  maxWidth && maxHeight
+    ? `<MaxSize>
         <Width>${maxWidth}</Width>
         <Height>${maxHeight}</Height>
-      </MaxSize>`: ''}
-      ${minWidth && minHeight ? `<MinSize>
+      </MaxSize>`
+    : ""
+}${
+  minWidth && minHeight
+    ? `<MinSize>
         <Width>${minWidth}</Width>
         <Height>${minHeight}</Height>
-      </MinSize>`: ''}
-    </Geometry>
+      </MinSize>`
+    : ""
+}</Geometry>
     <Icons>
       <Icon Type="Normal">${iconNormal}</Icon>
       <Icon Type="DarkNormal">${iconDarkNormal}</Icon>

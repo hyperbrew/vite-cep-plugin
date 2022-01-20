@@ -38,8 +38,8 @@ export const manifestTemplate = (props: CEP_Config) => {
 			<RequiredRuntime Name="CSXS" Version="${requiredRuntimeVersion.toFixed(1)}" />
 		</RequiredRuntimeList>
 	</ExecutionEnvironment>
-	<DispatchInfoList>
-    ${panels.map((panel) => {
+	<DispatchInfoList>${panels
+    .map((panel) => {
       let newProps: any = { ...props, ...panel };
       return extensionTemplate({
         id: newProps.id,
@@ -59,8 +59,9 @@ export const manifestTemplate = (props: CEP_Config) => {
         iconDarkNormal: newProps.iconDarkNormal,
         iconNormalRollOver: newProps.iconNormalRollOver,
         iconDarkNormalRollOver: newProps.iconDarkNormalRollOver,
+        scriptPath: newProps.scriptPath,
       });
-    })}
-	</DispatchInfoList>
+    })
+    .join("")}</DispatchInfoList>
 	</ExtensionManifest>`;
 };

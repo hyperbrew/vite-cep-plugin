@@ -87,7 +87,6 @@ export const copyFiles = ({ src, dest, assets }: CopyFilesArgs) => {
     console.log(`COPY ${fullSrcPath} to ${fullDstPath}`);
     fs.ensureDirSync(path.dirname(fullDstPath));
     fs.copySync(fullSrcPath, fullDstPath);
-    // fs.copysy
   });
 };
 
