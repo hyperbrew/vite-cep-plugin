@@ -1,7 +1,7 @@
 import * as os from "os";
 import * as path from "path";
 
-import { copyModules, unique } from "./copy-node";
+import { copyFiles, copyModules, unique } from "./copy-node";
 
 import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
@@ -176,7 +176,7 @@ export const cep = (opts: CepOptions) => {
     //   console.log(server);
     //   // return extra;
     // },
-    configResolved(config: ResolvedConfig) {
+    configResolved(config: ResolvedConfig | any) {
       if (!isProduction) {
         console.clear();
         console.log(`${conColors.green}CEP Panels Served at:`);
@@ -210,11 +210,19 @@ export const cep = (opts: CepOptions) => {
     },
     writeBundle() {
       // console.log(" BUILD END");
-      const src = "./";
+      const root = "./";
+      const src = "./src";
       const dest = "dist/cep";
       const symlink = false;
       const allPackages = unique(packages.concat(foundPackages));
-      copyModules({ packages: allPackages, src, dest, symlink });
+      copyModules({ packages: allPackages, src: root, dest, symlink });
+      if (cepConfig.copyAssets) {
+        copyFiles({
+          src,
+          dest,
+          assets: cepConfig.copyAssets,
+        });
+      }
 
       console.log("FINISH");
       if (isPackage) {

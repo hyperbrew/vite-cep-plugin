@@ -99,4 +99,5 @@ export interface CEP_Config {
     tsa: string;
   };
   installModules?: string[];
+  copyAssets?: string[];
 }
