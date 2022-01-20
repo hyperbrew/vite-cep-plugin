@@ -1,5 +1,5 @@
 {
-  "name": "vite-cep-plugin",
+  "name": "@hyperbrew/vite-cep-plugin",
   "version": "0.0.1",
   "description": "A Vite Plugin for building Adobe CEP Extension Panels",
   "main": "lib/index.js",
