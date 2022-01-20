@@ -7,6 +7,6 @@
     "strict": true,
     "allowJs": true
   },
-  "include": ["src", "src/lib/require-js.js"],
+  "include": ["src", "src/lib/require-js.js", "src/bin/*"],
   "exclude": ["node_modules"]
 }
