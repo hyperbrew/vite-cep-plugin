@@ -4,7 +4,11 @@
   "description": "A Vite Plugin for building Adobe CEP Extension Panels",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "repository": "git@github.com:hyperbrew/vite-cep-plugin.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperbrew/vite-cep-plugin.git"
+  },
+  "homepage": "https://github.com/hyperbrew/vite-cep-plugin",
   "license": "MIT",
   "scripts": {
     "build": "tsc && ts-node scripts/copy-files.ts",
