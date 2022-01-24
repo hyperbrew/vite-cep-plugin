@@ -20,6 +20,7 @@ import { CEP_Config } from "./cep-config";
 // export { CEP_Config } from "./cep-config";
 export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
+import MagicString from "magic-string";
 
 const homedir = os.homedir();
 
@@ -323,6 +324,7 @@ export const jsxInclude = (opts = {}) => {
       bundle[esFile].code = [...foundIncludes, bundle[esFile].code].join("\r");
     },
     transform: (code: string, id: string) => {
+      const s = new MagicString(code);
       const matches = code.match(/^\/\/(\s|)\@include(.*)/g);
       if (matches) {
         matches.map((match: string) => {
@@ -339,11 +341,30 @@ export const jsxInclude = (opts = {}) => {
                 `WARNING: File cannot be found for include ${match}`
               );
             }
-            code = code.replace(match, "");
+            // code = code.replace(match, "");
+            s.overwrite(
+              code.indexOf(match),
+              code.indexOf(match) + match.length,
+              ""
+            );
           }
         });
+      } else {
+        return {
+          code,
+          map: null,
+        };
       }
-      return code;
+      // console.log("ID ::: ", id);
+      return {
+        // code,
+        code: s.toString(),
+        map: s.generateMap({
+          source: id,
+          file: `${id}.map`,
+          includeContent: true,
+        }),
+      };
     },
   };
 };
