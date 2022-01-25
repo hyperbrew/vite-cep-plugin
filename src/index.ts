@@ -144,8 +144,8 @@ export const cep = (opts: CepOptions) => {
         const jsBasename = path.basename(jsPath[0]);
         if (jsPath) {
           newCode = newCode.replace(
-            match,
-            `=typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename});`
+            match.substring(0, match.length - 1),
+            `=typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename})`
           );
         }
       });
