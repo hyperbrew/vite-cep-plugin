@@ -325,8 +325,10 @@ export const jsxInclude = (opts = {}) => {
     },
     transform: (code: string, id: string) => {
       const s = new MagicString(code);
-      const matches = code.match(/^\/\/(\s|)\@include(.*)/g);
+      console.log("looking for JSXINCLUDE");
+      const matches = code.match(/^\/\/(\s|)\@include(.*)/gm);
       if (matches) {
+        console.log("FOUND!", matches);
         matches.map((match: string) => {
           const innerMatches = match.match(/(?:'|").*(?:'|")/);
           const firstMatch = innerMatches?.pop();
