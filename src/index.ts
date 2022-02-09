@@ -2,6 +2,7 @@ import * as os from "os";
 import * as path from "path";
 
 import { copyFiles, copyModules, unique } from "./copy-node";
+const jsxbin = require("jsxbin");
 
 import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
@@ -16,13 +17,15 @@ import { devHtmlTemplate } from "./templates/dev-html-template";
 import { htmlTemplate } from "./templates/html-template";
 import { ResolvedConfig } from "vite";
 import { menuHtmlTemplate } from "./templates/menu-html-template";
-import { CEP_Config } from "./cep-config";
+import { CEP_Config, JSXBIN_MODE } from "./cep-config";
 // export { CEP_Config } from "./cep-config";
 export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
 import MagicString from "magic-string";
 
 const homedir = os.homedir();
+const tmpDir = path.join(__dirname, ".tmp");
+fs.ensureDirSync(tmpDir);
 
 const ccGlobalExtensionFolder =
   os.platform() == "win32"
@@ -227,7 +230,7 @@ export const cep = (opts: CepOptions) => {
 
       console.log("FINISH");
       if (isPackage) {
-        return signZXP(cepConfig, path.join(dir, cepDist), zxpDir);
+        return signZXP(cepConfig, path.join(dir, cepDist), zxpDir, tmpDir);
       }
     },
     async generateBundle(output: any, bundle: any) {
@@ -325,10 +328,10 @@ export const jsxInclude = (opts = {}) => {
     },
     transform: (code: string, id: string) => {
       const s = new MagicString(code);
-      console.log("looking for JSXINCLUDE");
+      // console.log("looking for JSXINCLUDE");
       const matches = code.match(/^\/\/(\s|)\@include(.*)/gm);
       if (matches) {
-        console.log("FOUND!", matches);
+        // console.log("FOUND!", matches);
         matches.map((match: string) => {
           const innerMatches = match.match(/(?:'|").*(?:'|")/);
           const firstMatch = innerMatches?.pop();
@@ -367,6 +370,40 @@ export const jsxInclude = (opts = {}) => {
           includeContent: true,
         }),
       };
+    },
+  };
+};
+
+export const jsxBin = (jsxBinMode: JSXBIN_MODE) => {
+  return {
+    name: "extendscript-jsxbin",
+    generateBundle: async function (output: any, bundle: any) {
+      if (jsxBinMode === "copy" || jsxBinMode === "replace") {
+        const esFile = Object.keys(bundle).pop();
+        if (esFile) {
+          // console.log("GENERATE JSXBIN");
+          const srcFilePathTmp = path.join(tmpDir, esFile);
+          const esFileBin = esFile.replace("js", "jsxbin");
+          const dstFilePathTmp = path.join(tmpDir, esFileBin);
+          const tmpSrc = fs.writeFileSync(srcFilePathTmp, bundle[esFile].code, {
+            encoding: "utf-8",
+          });
+          await jsxbin(srcFilePathTmp, dstFilePathTmp);
+          const output = fs.readFileSync(dstFilePathTmp, { encoding: "utf-8" });
+          const jsxBinFile = {
+            type: "asset",
+            source: output,
+            name: "JSXBIN",
+            fileName: esFileBin,
+          };
+          //@ts-ignore
+          this.emitFile(jsxBinFile);
+          console.log(`JSXBIN Created: ${esFileBin}`);
+          if (jsxBinMode === "replace") {
+            delete bundle[esFile];
+          }
+        }
+      }
     },
   };
 };

@@ -21,6 +21,8 @@ type CEP_Host = {
   version: string;
 };
 
+export type JSXBIN_MODE = "off" | "copy" | "replace";
+
 type CEF_Command =
   | "--enable-media-stream"
   | "--enable-speech-input"
@@ -92,12 +94,18 @@ export interface CEP_Config {
 
   panels: CEP_Panel[];
 
+  build?: {
+    sourceMap?: boolean;
+    jsxBin?: JSXBIN_MODE;
+  };
   zxp: {
     country: string;
     province: string;
     org: string;
     password: string;
     tsa: string;
+    sourceMap?: boolean;
+    jsxBin?: JSXBIN_MODE;
   };
   installModules?: string[];
   copyAssets?: string[];
