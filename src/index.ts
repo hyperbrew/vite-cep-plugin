@@ -100,7 +100,6 @@ export const cep = (opts: CepOptions) => {
   return {
     name: "cep",
     transformIndexHtml(code: string, opts: any) {
-      const s = new MagicString(code);
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
       if (isDev) {
@@ -120,10 +119,9 @@ export const cep = (opts: CepOptions) => {
 
       // TODO: better require transformations
       //@ts-ignore
-      const jsName = jsFileName.substring(1);
+      const jsName = jsFileName.substr(1);
 
       let newCode = opts.bundle[jsName].code;
-      const newS = new MagicString(newCode);
 
       const allRequires = newCode.match(
         /(require\(\"([A-z]|[0-9]|\.|\/|\-)*\"\)(\;|\,))/g
@@ -148,52 +146,15 @@ export const cep = (opts: CepOptions) => {
         //@ts-ignore
         const jsBasename = path.basename(jsPath[0]);
         if (jsPath) {
-          const reqStr = `=typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename})`;
-          newS.overwrite(
-            newCode.indexOf(match),
-            newCode.indexOf(match) + match.length - 1,
-            reqStr
+          newCode = newCode.replace(
+            match.substring(0, match.length - 1),
+            `=typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename})`
           );
-          // OLD REPLACE
-          // newCode = newCode.replace(
-          //   match.substring(0, match.length - 1),
-          //   reqStr
-          // );
         }
       });
-      const strA = `="./assets`;
-      const newA = `="../assets`;
-      const strB = `="/assets`;
-      const newB = `="../assets`;
-      if (newCode.includes(strA)) {
-        newS.overwrite(
-          newCode.indexOf(strA),
-          newCode.indexOf(strA) + strA.length,
-          newA
-        );
-      }
-      if (newCode.includes(strB)) {
-        newS.overwrite(
-          newCode.indexOf(strB),
-          newCode.indexOf(strB) + strB.length,
-          newB
-        );
-      }
-      // OLD REPLACE
-      // newCode = newCode.replace(strA, newA);
-      // newCode = newCode.replace(strB, newB);
-      // opts.bundle[jsName].code = newCode;
-
-      opts.bundle[jsName].code = newS.toString();
-      opts.bundle[jsName].map = newS.generateMap({
-        source: opts.bundle[jsName].id,
-        file: `${opts.bundle[jsName].id}.map`,
-        includeContent: true,
-      });
-
-      // console.log(opts.bundle[jsName]);
-
-      // TODO -----> TEST!!!!!
+      newCode = newCode.replace(`="./assets`, `="../assets`);
+      newCode = newCode.replace(`="/assets`, `="../assets`);
+      opts.bundle[jsName].code = newCode;
 
       const sharedBundle = Object.keys(opts.bundle).find(
         (key) => key.includes("jsx-runtime") && key.includes(".js")
