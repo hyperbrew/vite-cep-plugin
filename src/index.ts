@@ -1,6 +1,8 @@
 import * as os from "os";
 import * as path from "path";
 
+import { Plugin } from "rollup";
+
 import { copyFiles, copyModules, unique } from "./copy-node";
 const jsxbin = require("jsxbin");
 
@@ -317,7 +319,7 @@ export const cep = (opts: CepOptions) => {
   };
 };
 
-export const jsxInclude = (opts = {}) => {
+export const jsxInclude = (): Plugin | any => {
   const foundIncludes: string[] = [];
   return {
     name: "extendscript-include-resolver",
@@ -329,10 +331,10 @@ export const jsxInclude = (opts = {}) => {
     transform: (code: string, id: string) => {
       const s = new MagicString(code);
       // console.log("looking for JSXINCLUDE");
-      const matches = code.match(/^\/\/(\s|)\@include(.*)/gm);
-      if (matches) {
+      const includeMatches = code.match(/^\/\/(\s|)\@include(.*)/gm);
+      if (includeMatches) {
         // console.log("FOUND!", matches);
-        matches.map((match: string) => {
+        includeMatches.map((match: string) => {
           const innerMatches = match.match(/(?:'|").*(?:'|")/);
           const firstMatch = innerMatches?.pop();
           if (firstMatch) {
@@ -346,7 +348,6 @@ export const jsxInclude = (opts = {}) => {
                 `WARNING: File cannot be found for include ${match}`
               );
             }
-            // code = code.replace(match, "");
             s.overwrite(
               code.indexOf(match),
               code.indexOf(match) + match.length,
@@ -354,15 +355,17 @@ export const jsxInclude = (opts = {}) => {
             );
           }
         });
-      } else {
-        return {
-          code,
-          map: null,
-        };
       }
-      // console.log("ID ::: ", id);
+      const commentMatches = code.match(/\/\/(\s|)\@(.*)/gm);
+      if (commentMatches) {
+        let end = 0;
+        commentMatches.map((comment) => {
+          const start = code.indexOf(comment, end);
+          end = start + comment.length;
+          s.overwrite(start, end, "");
+        });
+      }
       return {
-        // code,
         code: s.toString(),
         map: s.generateMap({
           source: id,
