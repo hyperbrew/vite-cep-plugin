@@ -244,7 +244,7 @@ export const cep = (opts: CepOptions) => {
       //@ts-ignore
       bundle[jsFileName].code = bundle[jsFileName].code.replace(
         /(\/assets\/)/g,
-        "./assets/"
+        "../assets/"
       );
 
       console.log(
