@@ -37,7 +37,13 @@ type CEF_Command =
   | "--disable-application-cache"
   | "--enable-nodejs"
   | "--disable-pinch"
-  | "--mixed-context";
+  | "--mixed-context"
+  | "--v=0"
+  | "--v=1"
+  | "--v=2"
+  | "--v=3"
+  | "--v=4"
+  | "--v=5";
 
 type CEP_Panel_Type = "Panel" | "ModalDialog" | "Modeless" | "Custom";
 
