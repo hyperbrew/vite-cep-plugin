@@ -102,6 +102,15 @@ export const cep = (opts: CepOptions) => {
   return {
     name: "cep",
     transformIndexHtml(code: string, opts: any) {
+      Object.keys(opts.bundle).filter((file) => {
+        if (file.includes("css")) {
+          const newCode = opts.bundle[file].source
+            .replace(/\(\.\/assets/g, `(../assets`)
+            .replace(/\(\/assets/g, `(./`);
+          opts.bundle[file].source = newCode;
+        }
+      });
+
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
       if (isDev) {
