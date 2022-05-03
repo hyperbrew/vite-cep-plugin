@@ -102,14 +102,16 @@ export const cep = (opts: CepOptions) => {
   return {
     name: "cep",
     transformIndexHtml(code: string, opts: any) {
-      Object.keys(opts.bundle).filter((file) => {
-        if (file.includes("css")) {
-          const newCode = opts.bundle[file].source
-            .replace(/\(\.\/assets/g, `(../assets`)
-            .replace(/\(\/assets/g, `(./`);
-          opts.bundle[file].source = newCode;
-        }
-      });
+      if (opts && opts.bundle) {
+        Object.keys(opts.bundle).filter((file) => {
+          if (file.includes("css")) {
+            const newCode = opts.bundle[file].source
+              .replace(/\(\.\/assets/g, `(../assets`)
+              .replace(/\(\/assets/g, `(./`);
+            opts.bundle[file].source = newCode;
+          }
+        });
+      }
 
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
@@ -249,12 +251,13 @@ export const cep = (opts: CepOptions) => {
         (key) => key.split(".").pop() === "js"
       );
 
-      // fix paths
-      //@ts-ignore
-      bundle[jsFileName].code = bundle[jsFileName].code.replace(
-        /(\/assets\/)/g,
-        "../assets/"
-      );
+      if (jsFileName && bundle[jsFileName].code) {
+        // fix paths
+        bundle[jsFileName].code = bundle[jsFileName].code.replace(
+          /(\/assets\/)/g,
+          "../assets/"
+        );
+      }
 
       console.log(
         `${conColors.green}cep process: ${
