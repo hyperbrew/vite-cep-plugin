@@ -249,12 +249,13 @@ export const cep = (opts: CepOptions) => {
         (key) => key.split(".").pop() === "js"
       );
 
-      // fix paths
-      //@ts-ignore
-      bundle[jsFileName].code = bundle[jsFileName].code.replace(
-        /(\/assets\/)/g,
-        "../assets/"
-      );
+      if (jsFileName && bundle[jsFileName].code) {
+        // fix paths
+        bundle[jsFileName].code = bundle[jsFileName].code.replace(
+          /(\/assets\/)/g,
+          "../assets/"
+        );
+      }
 
       console.log(
         `${conColors.green}cep process: ${
