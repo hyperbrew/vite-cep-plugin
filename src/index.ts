@@ -167,6 +167,10 @@ export const cep = (opts: CepOptions) => {
       });
       newCode = newCode.replace(`="./assets`, `="../assets`);
       newCode = newCode.replace(`="/assets`, `="../assets`);
+      newCode = newCode.replace(
+        `"use strict"`,
+        `"use strict"\rif (typeof exports === 'undefined') { var exports = {}; }`
+      );
       opts.bundle[jsName].code = newCode;
 
       const sharedBundle = Object.keys(opts.bundle).find(
