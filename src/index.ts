@@ -41,19 +41,56 @@ const ccLocalExtensionFolder =
 
 const makeSymlink = (dist: string, dest: string) => {
   try {
-    if (fs.existsSync(dest)) {
-      if(fs.readlinkSync(dest) === dist){
-          return 'exists';
-      }else{
+    if (symlinkExists(dest)) {
+      if (path.resolve(fs.readlinkSync(dest)) === path.resolve(dist)) {
+        log("symlink already exists", true);
+        return "exists";
+      } else {
         // incorrect link, remove and re-create
         fs.unlinkSync(dest);
       }
     }
     fs.symlinkSync(dist, dest, "junction");
-    return 'created';
+    log("symlink created", true);
+    return "created";
   } catch (e) {
-    return 'error';
+    console.log(e);
+    log("symlink failed. Try running 'sudo yarn symlink'", false);
+    return "error";
   }
+};
+
+const removeSymlink = (dist: string, dest: string) => {
+  try {
+    if (symlinkExists(dest)) {
+      fs.unlinkSync(dest);
+      log("symlink removed successfully", true);
+      return "removed";
+    } else {
+      log("no symlink exists", true);
+      return "none";
+    }
+  } catch (e) {
+    log("symlink removal failed. Try removing with 'sudo yarn unlink'", false);
+    return "error";
+  }
+};
+
+const symlinkExists = (dir: string) => {
+  let exists, readlink, lstat;
+  // try {
+  //   exists = fs.existsSync(dir);
+  // } catch (e) {}
+  // try {
+  //   readlink = fs.readlinkSync(dir);
+  // } catch (e) {}
+  try {
+    lstat = fs.lstatSync(dir);
+    exists = true;
+  } catch (e) {
+    exists = false;
+  }
+  return exists;
 };
 
 const injectRequire = fs.readFileSync(
@@ -325,13 +362,6 @@ export const cep = (opts: CepOptions) => {
           path.join(dir, cepDist),
           path.join(symlinkPath, cepConfig.id)
         );
-        if (res === 'exists') {
-          log("symlink already exists", true);
-        }else if(res === 'created'){
-          log("symlink created", true);
-        }else if(res === 'error'){
-          log("symlink failed. Try running 'sudo yarn symlink'", false);
-        }
       } catch (e) {
         console.warn(e);
       }
@@ -399,12 +429,35 @@ export const jsxInclude = (): Plugin | any => {
   };
 };
 
-export const genSymlink = () => {
-  // const res = makeSymlink(
-  //   path.join(dir, cepDist),
-  //   path.join(symlinkPath, cepConfig.id)
-  // );
-}
+export const runAction = (opts: CepOptions, action: string) => {
+  const {
+    cepConfig,
+    dir,
+    isProduction,
+    isPackage,
+    isServe,
+    debugReact,
+    cepDist,
+    zxpDir,
+    packages,
+  } = opts;
+
+  const symlinkPath =
+    cepConfig.symlink === "global"
+      ? ccGlobalExtensionFolder
+      : ccLocalExtensionFolder;
+  const symlinkSrc = path.join(dir, cepDist);
+  const symlinkDst = path.join(symlinkPath, cepConfig.id);
+
+  if (action === "symlink") {
+    makeSymlink(symlinkSrc, symlinkDst);
+  } else if (action === "delsymlink") {
+    removeSymlink(symlinkSrc, symlinkDst);
+  } else {
+    console.warn(`Unknown Action: ${action}`);
+  }
+  resetLog();
+};
 
 export const jsxBin = (jsxBinMode: JSXBIN_MODE) => {
   return {
