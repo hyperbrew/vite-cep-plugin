@@ -54,7 +54,6 @@ const makeSymlink = (dist: string, dest: string) => {
     log("symlink created", true);
     return "created";
   } catch (e) {
-    console.log(e);
     log("symlink failed. Try running 'sudo yarn symlink'", false);
     return "error";
   }
@@ -71,7 +70,7 @@ const removeSymlink = (dist: string, dest: string) => {
       return "none";
     }
   } catch (e) {
-    log("symlink removal failed. Try removing with 'sudo yarn unlink'", false);
+    log("symlink removal failed. Try removing with 'sudo yarn delsymlink'", false);
     return "error";
   }
 };
