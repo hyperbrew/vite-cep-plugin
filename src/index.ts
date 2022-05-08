@@ -42,12 +42,17 @@ const ccLocalExtensionFolder =
 const makeSymlink = (dist: string, dest: string) => {
   try {
     if (fs.existsSync(dest)) {
-      fs.unlinkSync(dest);
+      if(fs.readlinkSync(dest) === dist){
+          return 'exists';
+      }else{
+        // incorrect link, remove and re-create
+        fs.unlinkSync(dest);
+      }
     }
     fs.symlinkSync(dist, dest, "junction");
-    return [true, dest];
+    return 'created';
   } catch (e) {
-    return [false, e];
+    return 'error';
   }
 };
 
@@ -318,13 +323,14 @@ export const cep = (opts: CepOptions) => {
             : ccLocalExtensionFolder;
         const res = makeSymlink(
           path.join(dir, cepDist),
-
           path.join(symlinkPath, cepConfig.id)
         );
-        if (!res[0]) {
+        if (res === 'exists') {
           log("symlink already exists", true);
-        } else {
+        }else if(res === 'created'){
           log("symlink created", true);
+        }else if(res === 'error'){
+          log("symlink failed. Try running 'sudo yarn symlink'", false);
         }
       } catch (e) {
         console.warn(e);
@@ -392,6 +398,13 @@ export const jsxInclude = (): Plugin | any => {
     },
   };
 };
+
+export const genSymlink = () => {
+  // const res = makeSymlink(
+  //   path.join(dir, cepDist),
+  //   path.join(symlinkPath, cepConfig.id)
+  // );
+}
 
 export const jsxBin = (jsxBinMode: JSXBIN_MODE) => {
   return {
