@@ -19,9 +19,9 @@ export const htmlTemplate = ({
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>${displayName}</title>
     <script>${injectRequire}</script>
-    ${cssFileNames
+    ${cssFileNames ? cssFileNames
       .map((file) => `<link rel="stylesheet" href="..${file}">`)
-      .join("\n\t\t")}
+      .join("\n\t\t") : ``}
     </head>
     <body>
       <div id="root"></div>
