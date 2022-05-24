@@ -59,18 +59,19 @@ export interface CEP_Panel {
   minWidth?: number;
   minHeight?: number;
   scriptPath?: string;
-}
-
-export interface CEP_Extended_Panel extends CEP_Panel {
-  id: string;
+  type?: CEP_Panel_Type;
+  id?: string;
   iconDarkNormal?: string;
   iconNormal?: string;
   iconDarkNormalRollOver?: string;
   iconNormalRollOver?: string;
+  parameters?: CEF_Command[];
+}
+
+export interface CEP_Extended_Panel extends CEP_Panel {
+  id: string;
   parameters: CEF_Command[];
   type: CEP_Panel_Type;
-  width?: number;
-  height?: number;
 }
 
 export interface CEP_Config {
@@ -115,4 +116,8 @@ export interface CEP_Config {
   };
   installModules?: string[];
   copyAssets?: string[];
+}
+
+export interface CEP_Config_Extended extends CEP_Config {
+  panels: CEP_Extended_Panel[];
 }

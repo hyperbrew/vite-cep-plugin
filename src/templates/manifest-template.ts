@@ -1,6 +1,6 @@
-import { CEP_Config } from "../cep-config";
+import type { CEP_Config_Extended } from "../cep-config";
 import { extensionTemplate } from "./extension-template";
-export const manifestTemplate = (props: CEP_Config) => {
+export const manifestTemplate = (props: CEP_Config_Extended) => {
   const {
     extensionManifestVersion,
     id,
@@ -20,9 +20,7 @@ export const manifestTemplate = (props: CEP_Config) => {
   >
   <ExtensionList>
     ${panels
-      .map(
-        ({ name }) => `<Extension Id="${id}.${name}" Version="${version}" />`
-      )
+      .map((panel) => `<Extension Id="${panel.id}" Version="${version}" />`)
       .join("")}
 	</ExtensionList>
 	<ExecutionEnvironment>
@@ -39,29 +37,7 @@ export const manifestTemplate = (props: CEP_Config) => {
 		</RequiredRuntimeList>
 	</ExecutionEnvironment>
 	<DispatchInfoList>${panels
-    .map((panel) => {
-      let newProps: any = { ...props, ...panel };
-      return extensionTemplate({
-        id: newProps.id,
-        name: newProps.name,
-        parameters: newProps.parameters,
-        autoVisible: newProps.autoVisible,
-        mainPath: newProps.mainPath,
-        type: newProps.type,
-        panelDisplayName: newProps.panelDisplayName,
-        width: newProps.width,
-        height: newProps.height,
-        minWidth: newProps.minWidth,
-        minHeight: newProps.minHeight,
-        maxWidth: newProps.maxWidth,
-        maxHeight: newProps.maxHeight,
-        iconNormal: newProps.iconNormal,
-        iconDarkNormal: newProps.iconDarkNormal,
-        iconNormalRollOver: newProps.iconNormalRollOver,
-        iconDarkNormalRollOver: newProps.iconDarkNormalRollOver,
-        scriptPath: newProps.scriptPath,
-      });
-    })
+    .map((panel) => extensionTemplate(panel))
     .join("")}</DispatchInfoList>
 	</ExtensionManifest>`;
 };

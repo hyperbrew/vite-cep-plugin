@@ -19,7 +19,7 @@ import { devHtmlTemplate } from "./templates/dev-html-template";
 import { htmlTemplate } from "./templates/html-template";
 import { ResolvedConfig } from "vite";
 import { menuHtmlTemplate } from "./templates/menu-html-template";
-import { CEP_Config, JSXBIN_MODE } from "./cep-config";
+import { CEP_Config, CEP_Config_Extended, JSXBIN_MODE } from "./cep-config";
 // export { CEP_Config } from "./cep-config";
 export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
@@ -70,7 +70,10 @@ const removeSymlink = (dist: string, dest: string) => {
       return "none";
     }
   } catch (e) {
-    log("symlink removal failed. Try removing with 'sudo yarn delsymlink'", false);
+    log(
+      "symlink removal failed. Try removing with 'sudo yarn delsymlink'",
+      false
+    );
     return "error";
   }
 };
@@ -310,9 +313,42 @@ export const cep = (opts: CepOptions) => {
         }`
       );
 
+      // Fill any empty panel fields with extension's defaults
+      const fillPanelFields = (config: CEP_Config) => {
+        let newConfig: CEP_Config_Extended = {
+          ...config,
+          panels: config.panels.map((panel) => {
+            let newProps: any = { ...config, ...panel };
+            return {
+              id: panel.id ? panel.id : `${config.id}.${panel.name}`,
+              name: newProps.name,
+              parameters: newProps.parameters,
+              autoVisible: newProps.autoVisible,
+              mainPath: newProps.mainPath,
+              type: newProps.type,
+              panelDisplayName: newProps.panelDisplayName,
+              width: newProps.width,
+              height: newProps.height,
+              minWidth: newProps.minWidth,
+              minHeight: newProps.minHeight,
+              maxWidth: newProps.maxWidth,
+              maxHeight: newProps.maxHeight,
+              iconNormal: newProps.iconNormal,
+              iconDarkNormal: newProps.iconDarkNormal,
+              iconNormalRollOver: newProps.iconNormalRollOver,
+              iconDarkNormalRollOver: newProps.iconDarkNormalRollOver,
+              scriptPath: newProps.scriptPath,
+            };
+          }),
+        };
+        return newConfig;
+      };
+
+      const extendedConfig = fillPanelFields(cepConfig);
+
       const manifestFile = {
         type: "asset",
-        source: prettifyXml(manifestTemplate(cepConfig), {
+        source: prettifyXml(manifestTemplate(extendedConfig), {
           indent: 2,
           newline: "\n",
         }),
@@ -344,7 +380,7 @@ export const cep = (opts: CepOptions) => {
       const debugFile = {
         type: "asset",
 
-        source: prettifyXml(debugTemplate(cepConfig)),
+        source: prettifyXml(debugTemplate(extendedConfig)),
         name: "CEP Debug File",
         fileName: path.join(".debug"),
       };
