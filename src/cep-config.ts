@@ -50,7 +50,7 @@ type CEP_Panel_Type = "Panel" | "ModalDialog" | "Modeless" | "Custom";
 export interface CEP_Panel {
   mainPath: string;
   name: string;
-  panelDisplayName: string;
+  panelDisplayName?: string | null;
   autoVisible: boolean;
   width?: number;
   height?: number;

@@ -11,7 +11,14 @@ const prettifyXml = require("prettify-xml");
 
 // import { requirejs } from "./lib/require-js";
 
-import { log, conColors, posix, resetLog } from "./lib/lib";
+import {
+  log,
+  conColors,
+  posix,
+  resetLog,
+  fixAssetPathCSS,
+  fixAssetPathJS,
+} from "./lib/lib";
 import { signZXP } from "./lib/zxp";
 import { manifestTemplate } from "./templates/manifest-template";
 import { debugTemplate } from "./templates/debug-template";
@@ -149,9 +156,7 @@ export const cep = (opts: CepOptions) => {
       if (opts && opts.bundle) {
         Object.keys(opts.bundle).filter((file) => {
           if (file.includes("css")) {
-            const newCode = opts.bundle[file].source
-              .replace(/\(\.\/assets/g, `(../assets`)
-              .replace(/\(\/assets/g, `(./`);
+            const newCode = fixAssetPathCSS(opts.bundle[file].source);
             opts.bundle[file].source = newCode;
           }
         });
@@ -209,8 +214,7 @@ export const cep = (opts: CepOptions) => {
           );
         }
       });
-      newCode = newCode.replace(`="./assets`, `="../assets`);
-      newCode = newCode.replace(`="/assets`, `="../assets`);
+      newCode = fixAssetPathJS(newCode);
       newCode = newCode.replace(
         `"use strict"`,
         `"use strict"\rif (typeof exports === 'undefined') { var exports = {}; }`
@@ -221,9 +225,8 @@ export const cep = (opts: CepOptions) => {
         (key) => key.includes("jsx-runtime") && key.includes(".js")
       );
       if (sharedBundle && opts.bundle[sharedBundle]) {
-        opts.bundle[sharedBundle].code = opts.bundle[sharedBundle].code
-          .replace(`="./assets`, `="../assets`)
-          .replace(`="/assets`, `="../assets`);
+        let newCode = opts.bundle[sharedBundle].code;
+        opts.bundle[sharedBundle].code = fixAssetPathJS(newCode);
       }
 
       const html = htmlTemplate({
