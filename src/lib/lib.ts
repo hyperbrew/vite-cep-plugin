@@ -50,13 +50,17 @@ export const safeCreate = (dir: string) => {
 export const posix = (str: string) => str.replace(/\\/g, "/");
 
 export const fixAssetPathJS = (code: string) => {
+  console.log("changing: ", code.match(/\=\"(\.+)\/assets/g));
   code = code.replace(/\=\"\.\/assets/g, `="../assets`);
   code = code.replace(/\=\"\/assets/g, `="../assets`);
+  console.log("to: ", code.match(/\=\"(\.+)\/assets/g));
   return code;
 };
 
 export const fixAssetPathCSS = (code: string) => {
+  console.log("css changing: ", code.match(/(\.+)\/assets/g));
   code = code.replace(/\(\.\/assets/g, `(../assets`);
   code = code.replace(/\(\/assets/g, `(./`);
+  console.log("css to: ", code.match(/(\.+)\/assets/g));
   return code;
 };

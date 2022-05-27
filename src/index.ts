@@ -214,20 +214,18 @@ export const cep = (opts: CepOptions) => {
           );
         }
       });
-      newCode = fixAssetPathJS(newCode);
       newCode = newCode.replace(
         `"use strict"`,
         `"use strict"\rif (typeof exports === 'undefined') { var exports = {}; }`
       );
       opts.bundle[jsName].code = newCode;
 
-      const sharedBundle = Object.keys(opts.bundle).find(
-        (key) => key.includes("jsx-runtime") && key.includes(".js")
-      );
-      if (sharedBundle && opts.bundle[sharedBundle]) {
-        let newCode = opts.bundle[sharedBundle].code;
-        opts.bundle[sharedBundle].code = fixAssetPathJS(newCode);
-      }
+      Object.keys(opts.bundle).map((key) => {
+        if (key.includes(".js")) {
+          let newCode = opts.bundle[key].code;
+          opts.bundle[key].code = fixAssetPathJS(newCode);
+        }
+      });
 
       const html = htmlTemplate({
         ...cepConfig,
@@ -298,18 +296,6 @@ export const cep = (opts: CepOptions) => {
       }
     },
     async generateBundle(output: any, bundle: any) {
-      const jsFileName = Object.keys(bundle).find(
-        (key) => key.split(".").pop() === "js"
-      );
-
-      if (jsFileName && bundle[jsFileName].code) {
-        // fix paths
-        bundle[jsFileName].code = bundle[jsFileName].code.replace(
-          /(\/assets\/)/g,
-          "../assets/"
-        );
-      }
-
       console.log(
         `${conColors.green}cep process: ${
           (isPackage && "zxp package") || (isProduction && "build") || "dev"
