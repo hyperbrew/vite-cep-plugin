@@ -155,9 +155,13 @@ export const cep = (opts: CepOptions) => {
     transformIndexHtml(code: string, opts: any) {
       if (opts && opts.bundle) {
         Object.keys(opts.bundle).filter((file) => {
-          if (file.includes("css")) {
-            const newCode = fixAssetPathCSS(opts.bundle[file].source);
-            opts.bundle[file].source = newCode;
+          if (path.extname(file) === ".css") {
+            let newCode = opts.bundle[file].source;
+            if (newCode) {
+              opts.bundle[file].source = fixAssetPathCSS(newCode);
+            } else {
+              console.log("missing code: ", file);
+            }
           }
         });
       }
@@ -221,9 +225,15 @@ export const cep = (opts: CepOptions) => {
       opts.bundle[jsName].code = newCode;
 
       Object.keys(opts.bundle).map((key) => {
-        if (key.includes(".js")) {
-          let newCode = opts.bundle[key].code;
-          opts.bundle[key].code = fixAssetPathJS(newCode);
+        if (path.extname(key) === ".js") {
+          let { code, source } = opts.bundle[key];
+          if (code && code.replace) {
+            opts.bundle[key].code = fixAssetPathJS(code);
+          } else if (source && source.replace) {
+            opts.bundle[key].source = fixAssetPathJS(source);
+          } else {
+            console.log("missing code and source: ", opts.bundle[key]);
+          }
         }
       });
 

@@ -52,6 +52,8 @@ export const posix = (str: string) => str.replace(/\\/g, "/");
 export const fixAssetPathJS = (code: string) => {
   code = code.replace(/\=\"\.\/assets/g, `="../assets`);
   code = code.replace(/\=\"\/assets/g, `="../assets`);
+  code = code.replace(/\(\"\.\/assets/g, `("../assets`);
+  code = code.replace(/\(\"\/assets/g, `("../assets`);
   return code;
 };
 
