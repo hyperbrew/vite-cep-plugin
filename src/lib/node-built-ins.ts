@@ -3,6 +3,7 @@ export const nodeBuiltIns = [
   "assert",
   "buffer",
   "child_process",
+  "worker_threads",
   "cluster",
   "dgram",
   "dns",
