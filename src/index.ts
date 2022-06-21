@@ -18,13 +18,14 @@ import {
   resetLog,
   fixAssetPathCSS,
   fixAssetPathJS,
+  fixAssetPathHTML,
+  removeModuleTags,
 } from "./lib/lib";
 import { signZXP } from "./lib/zxp";
 import { manifestTemplate } from "./templates/manifest-template";
 import { debugTemplate } from "./templates/debug-template";
 import { devHtmlTemplate } from "./templates/dev-html-template";
-import { htmlTemplate } from "./templates/html-template";
-import { ResolvedConfig } from "vite";
+import type { HtmlTagDescriptor, ResolvedConfig } from "vite";
 import { menuHtmlTemplate } from "./templates/menu-html-template";
 import { CEP_Config, CEP_Config_Extended, JSXBIN_MODE } from "./cep-config";
 // export { CEP_Config } from "./cep-config";
@@ -153,6 +154,11 @@ export const cep = (opts: CepOptions) => {
   return {
     name: "cep",
     transformIndexHtml(code: string, opts: any) {
+      const browserRequireIgnore: HtmlTagDescriptor = {
+        tag: "script",
+        children: injectRequire,
+      };
+
       if (opts && opts.bundle) {
         Object.keys(opts.bundle).filter((file) => {
           if (path.extname(file) === ".css") {
@@ -169,7 +175,8 @@ export const cep = (opts: CepOptions) => {
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
       if (isDev) {
-        return code;
+        const tags: HtmlTagDescriptor[] = [browserRequireIgnore];
+        return tags;
       }
       let cssFileNameMatches = code.match(/(href=\".*.css\")/g);
       const cssFileNames =
@@ -237,21 +244,32 @@ export const cep = (opts: CepOptions) => {
         }
       });
 
-      const html = htmlTemplate({
-        ...cepConfig,
-        debugReact,
-        //@ts-ignore
-        jsFileName,
-        //@ts-ignore
-        cssFileNames,
-        injectRequire,
-      });
-      return html;
+      const tags: HtmlTagDescriptor[] = [
+        browserRequireIgnore,
+        {
+          tag: "script",
+          attrs: { src: `..${jsFileName}` },
+          injectTo: "body",
+        },
+      ];
+
+      code = removeModuleTags(code);
+      code = fixAssetPathHTML(code);
+
+      if (debugReact) {
+        tags.push({
+          tag: "script",
+          attrs: { src: "http://localhost:8097" },
+          injectTo: "body",
+        });
+      }
+
+      return {
+        tags,
+        html: code,
+      };
     },
-    // configureServer(server, extra) {
-    //   console.log(server);
-    //   // return extra;
-    // },
+
     configResolved(config: ResolvedConfig | any) {
       if (!isProduction) {
         console.clear();
