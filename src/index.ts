@@ -23,8 +23,7 @@ import { signZXP } from "./lib/zxp";
 import { manifestTemplate } from "./templates/manifest-template";
 import { debugTemplate } from "./templates/debug-template";
 import { devHtmlTemplate } from "./templates/dev-html-template";
-import { htmlTemplate } from "./templates/html-template";
-import { ResolvedConfig } from "vite";
+import type { HtmlTagDescriptor, ResolvedConfig } from "vite";
 import { menuHtmlTemplate } from "./templates/menu-html-template";
 import { CEP_Config, CEP_Config_Extended, JSXBIN_MODE } from "./cep-config";
 // export { CEP_Config } from "./cep-config";
@@ -237,16 +236,29 @@ export const cep = (opts: CepOptions) => {
         }
       });
 
-      const html = htmlTemplate({
-        ...cepConfig,
-        debugReact,
-        //@ts-ignore
-        jsFileName,
-        //@ts-ignore
-        cssFileNames,
-        injectRequire,
-      });
-      return html;
+      const tags: HtmlTagDescriptor[] = [
+        { tag: "script", children: injectRequire },
+        { tag: "script", attrs: { src: `..${jsFileName}` } },
+      ];
+
+      if (cssFileNames) {
+        tags.push(
+          ...cssFileNames.map((file) => ({
+            tag: "link",
+            attrs: { rel: "stylesheet", href: `..${file}` },
+          }))
+        );
+      }
+
+      if (debugReact) {
+        tags.push({
+          tag: "script",
+          attrs: { src: "http://localhost:8097" },
+          injectTo: "body",
+        });
+      }
+
+      return tags;
     },
     // configureServer(server, extra) {
     //   console.log(server);
