@@ -18,6 +18,8 @@ import {
   resetLog,
   fixAssetPathCSS,
   fixAssetPathJS,
+  fixAssetPathHTML,
+  removeModuleTags,
 } from "./lib/lib";
 import { signZXP } from "./lib/zxp";
 import { manifestTemplate } from "./templates/manifest-template";
@@ -152,6 +154,11 @@ export const cep = (opts: CepOptions) => {
   return {
     name: "cep",
     transformIndexHtml(code: string, opts: any) {
+      const browserRequireIgnore: HtmlTagDescriptor = {
+        tag: "script",
+        children: injectRequire,
+      };
+
       if (opts && opts.bundle) {
         Object.keys(opts.bundle).filter((file) => {
           if (path.extname(file) === ".css") {
@@ -168,7 +175,8 @@ export const cep = (opts: CepOptions) => {
       // console.log("HTML Transform");
       const isDev = opts.server !== undefined;
       if (isDev) {
-        return code;
+        const tags: HtmlTagDescriptor[] = [browserRequireIgnore];
+        return tags;
       }
       let cssFileNameMatches = code.match(/(href=\".*.css\")/g);
       const cssFileNames =
@@ -237,18 +245,16 @@ export const cep = (opts: CepOptions) => {
       });
 
       const tags: HtmlTagDescriptor[] = [
-        { tag: "script", children: injectRequire },
-        { tag: "script", attrs: { src: `..${jsFileName}` } },
+        browserRequireIgnore,
+        {
+          tag: "script",
+          attrs: { src: `..${jsFileName}` },
+          injectTo: "body",
+        },
       ];
 
-      if (cssFileNames) {
-        tags.push(
-          ...cssFileNames.map((file) => ({
-            tag: "link",
-            attrs: { rel: "stylesheet", href: `..${file}` },
-          }))
-        );
-      }
+      code = removeModuleTags(code);
+      code = fixAssetPathHTML(code);
 
       if (debugReact) {
         tags.push({
@@ -258,12 +264,12 @@ export const cep = (opts: CepOptions) => {
         });
       }
 
-      return tags;
+      return {
+        tags,
+        html: code,
+      };
     },
-    // configureServer(server, extra) {
-    //   console.log(server);
-    //   // return extra;
-    // },
+
     configResolved(config: ResolvedConfig | any) {
       if (!isProduction) {
         console.clear();
