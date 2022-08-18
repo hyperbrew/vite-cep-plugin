@@ -423,14 +423,29 @@ export const cep = (opts: CepOptions) => {
   };
 };
 
-export const jsxInclude = (): Plugin | any => {
+export const jsxInclude = ({
+  iife,
+  globalThis,
+}: {
+  iife: boolean;
+  globalThis: string;
+}): Plugin | any => {
   const foundIncludes: string[] = [];
   return {
     name: "extendscript-include-resolver",
-    generateBundle: (output: any, bundle: any) => {
-      const esFile = Object.keys(bundle).pop();
-      //@ts-ignore
-      bundle[esFile].code = [...foundIncludes, bundle[esFile].code].join("\r");
+    generateBundle: (
+      output: any,
+      bundle: { [key: string]: { code: string } }
+    ) => {
+      const esFile = Object.keys(bundle).pop() as keyof object;
+      const core = [...foundIncludes, bundle[esFile].code];
+      if (iife) {
+        const banner = `(function (${globalThis}) {`;
+        const footer = "})(this);";
+        bundle[esFile].code = [banner, ...core, footer].join("\r");
+      } else {
+        bundle[esFile].code = core.join("\r");
+      }
     },
     transform: (code: string, id: string) => {
       const s = new MagicString(code);
@@ -444,18 +459,22 @@ export const jsxInclude = (): Plugin | any => {
           if (firstMatch) {
             const relativeDir = firstMatch.replace(/(\"|\')/g, "");
             const filePath = path.join(path.dirname(id), relativeDir);
+            let text = "";
             if (fs.existsSync(filePath)) {
-              const text = fs.readFileSync(filePath, { encoding: "utf-8" });
+              text = fs.readFileSync(filePath, { encoding: "utf-8" });
               foundIncludes.push(text);
             } else {
               console.warn(
                 `WARNING: File cannot be found for include ${match}`
               );
             }
+            // console.log("INDEX :: ", code.indexOf(match));
+            // console.log("CODE :: ", code);
             s.overwrite(
               code.indexOf(match),
               code.indexOf(match) + match.length,
               ""
+              // text
             );
           }
         });
