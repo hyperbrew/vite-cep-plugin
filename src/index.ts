@@ -530,7 +530,7 @@ export const runAction = (opts: CepOptions, action: string) => {
   resetLog();
 };
 
-export const jsxBin = (jsxBinMode: JSXBIN_MODE) => {
+export const jsxBin = (jsxBinMode?: JSXBIN_MODE) => {
   return {
     name: "extendscript-jsxbin",
     generateBundle: async function (output: any, bundle: any) {
