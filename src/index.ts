@@ -318,7 +318,7 @@ export const cep = (opts: CepOptions) => {
         });
       }
 
-      console.log("FINISH");
+      // console.log("FINISH");
       if (isPackage) {
         return signZXP(cepConfig, path.join(dir, cepDist), zxpDir, tmpDir);
       }
@@ -439,15 +439,14 @@ export const jsxInclude = ({
     ) => {
       const esFile = Object.keys(bundle).pop() as keyof object;
       const core = [
-        "// EXTENDSCRIPT INCLUDES --- START",
+        "// ----- EXTENDSCRIPT INCLUDES ------ //",
         ...foundIncludes,
-        "// EXTENDSCRIPT INCLUDES --- END",
+        "// ---------------------------------- //",
         bundle[esFile].code,
       ];
       if (iife) {
         const banner = `(function (${globalThis}) {`;
         const footer = "})(this);";
-        console.log("test"), console.log("test");
         bundle[esFile].code = [banner, ...core, footer].join("\r");
       } else {
         bundle[esFile].code = core.join("\r");
@@ -480,7 +479,6 @@ export const jsxInclude = ({
               code.indexOf(match),
               code.indexOf(match) + match.length,
               ""
-              // text
             );
           }
         });
@@ -537,9 +535,11 @@ export const jsxPonyfill = (extraPonyfills?: PonyFillItem[]): Plugin | any => {
       const esFile = Object.keys(bundle).pop() as keyof object;
 
       let ponyfillStr = [
-        `// EXTENDSCRIPT PONYFILLS --- START`,
-        ponyfills.map((p) => p.inject).join("\r"),
-        `// EXTENDSCRIPT PONYFILLS --- END`,
+        `// ----- EXTENDSCRIPT PONYFILLS -----`,
+        Array.from(usedPonyfills)
+          .map((p) => p.inject)
+          .join("\r"),
+        "// ---------------------------------- //",
       ].join("\r");
 
       const core = [ponyfillStr, bundle[esFile].code];
@@ -548,21 +548,21 @@ export const jsxPonyfill = (extraPonyfills?: PonyFillItem[]): Plugin | any => {
     renderChunk: (code: string, chunk: any) => {
       const id = chunk.fileName;
       const s = new MagicString(code);
-      console.log("Ponyfill Time");
+      // console.log("Ponyfill Time");
 
       ponyfills.map((pony) => {
         const regexp = new RegExp(pony.find, "g");
         const gen = code.matchAll(regexp);
-        console.log("GEN", gen);
+        // console.log("GEN", gen);
         if (gen) {
           const matches = [...gen];
-          console.log("FOUND!", pony.find);
+          // console.log("FOUND!", pony.find);
           matches.map((match) => {
             usedPonyfills.add(pony);
             const index = match.index;
             const length = match[0].length;
             if (index) {
-              console.log("REPLACING :: ", index, index + length);
+              // console.log("REPLACING :: ", index, index + length);
               s.overwrite(
                 index,
                 index + length,
