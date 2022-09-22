@@ -19,6 +19,7 @@ export const extensionTemplate = ({
   iconNormalRollOver,
   iconDarkNormalRollOver,
   scriptPath,
+  startOnEvents,
 }: CEP_Extended_Panel) => `<Extension Id="${id}">
 <DispatchInfo>
   <Resources>
@@ -32,6 +33,12 @@ export const extensionTemplate = ({
   </Resources>
   <Lifecycle>
     <AutoVisible>${autoVisible}</AutoVisible>
+    ${
+      startOnEvents &&
+      `<StartOn>${startOnEvents
+        .map((event) => `<Event>${event}</Event>`)
+        .join("\n")}</StartOn>`
+    } 
   </Lifecycle>
   <UI>
     <Type>${type}</Type>

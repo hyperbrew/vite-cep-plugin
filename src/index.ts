@@ -355,6 +355,7 @@ export const cep = (opts: CepOptions) => {
               iconNormalRollOver: newProps.iconNormalRollOver,
               iconDarkNormalRollOver: newProps.iconDarkNormalRollOver,
               scriptPath: newProps.scriptPath,
+              startOnEvents: newProps.startOnEvents,
             };
           }),
         };

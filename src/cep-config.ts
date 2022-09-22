@@ -66,6 +66,7 @@ export interface CEP_Panel {
   iconDarkNormalRollOver?: string;
   iconNormalRollOver?: string;
   parameters?: CEF_Command[];
+  startOnEvents?: string[];
 }
 
 export interface CEP_Extended_Panel extends CEP_Panel {
