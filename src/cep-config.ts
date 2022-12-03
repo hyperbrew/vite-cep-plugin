@@ -14,6 +14,7 @@ type CEP_Host_Name =
   | "AUDT"
   | "DRWV"
   | "KBRG"
+  | "AME"
   | "RUSH";
 
 type CEP_Host = {
