@@ -25,20 +25,23 @@ export const extensionTemplate = ({
   <Resources>
     <MainPath>${mainPath}</MainPath>${
   (scriptPath && `<ScriptPath>${scriptPath}</ScriptPath>`) || ""
-}<CEFCommandLine>
-      ${parameters
-        .map((item) => `<Parameter>${item.toString()}</Parameter>`)
-        .join("\n")}
+}<CEFCommandLine>${
+  (parameters &&
+    parameters
+      .map((item) => `\n<Parameter>${item.toString()}</Parameter>`)
+      .join("")) ||
+  ""
+}
     </CEFCommandLine>
   </Resources>
   <Lifecycle>
-    <AutoVisible>${autoVisible}</AutoVisible>
-    ${
-      startOnEvents &&
-      `<StartOn>${startOnEvents
-        .map((event) => `<Event>${event}</Event>`)
-        .join("\n")}</StartOn>`
-    } 
+    <AutoVisible>${autoVisible}</AutoVisible>${
+  (startOnEvents &&
+    `<StartOn>${startOnEvents
+      .map((event) => `\n<Event>${event}</Event>`)
+      .join("")}</StartOn>`) ||
+  ""
+} 
   </Lifecycle>
   <UI>
     <Type>${type}</Type>
