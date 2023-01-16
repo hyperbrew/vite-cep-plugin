@@ -32,6 +32,7 @@ import { CEP_Config, CEP_Config_Extended, JSXBIN_MODE } from "./cep-config";
 export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
 import MagicString from "magic-string";
+import { metaPackage } from "./lib/zip";
 
 const homedir = os.homedir();
 const tmpDir = path.join(__dirname, ".tmp");
@@ -117,10 +118,12 @@ interface CepOptions {
   dir: string;
   isProduction: boolean;
   isPackage: boolean;
+  isMetaPackage: boolean;
   debugReact: boolean;
   isServe: boolean;
   cepDist: string;
   zxpDir: string;
+  zipDir: string;
   packages: string[];
 }
 export const cep = (opts: CepOptions) => {
@@ -129,10 +132,12 @@ export const cep = (opts: CepOptions) => {
     dir,
     isProduction,
     isPackage,
+    isMetaPackage,
     isServe,
     debugReact,
     cepDist,
     zxpDir,
+    zipDir,
     packages,
   } = opts;
 
@@ -302,7 +307,7 @@ export const cep = (opts: CepOptions) => {
         });
       }
     },
-    writeBundle() {
+    async writeBundle() {
       // console.log(" BUILD END");
       const root = "./";
       const src = "./src";
@@ -312,15 +317,29 @@ export const cep = (opts: CepOptions) => {
       copyModules({ packages: allPackages, src: root, dest, symlink });
       if (cepConfig.copyAssets) {
         copyFiles({
-          src,
-          dest,
+          src: path.join(process.cwd(), src),
+          dest: path.join(process.cwd(), dest),
           assets: cepConfig.copyAssets,
         });
       }
 
       // console.log("FINISH");
       if (isPackage) {
-        return signZXP(cepConfig, path.join(dir, cepDist), zxpDir, tmpDir);
+        const zxpPath = signZXP(
+          cepConfig,
+          path.join(dir, cepDist),
+          zxpDir,
+          tmpDir
+        );
+        if (isMetaPackage) {
+          await metaPackage(
+            cepConfig,
+            zipDir,
+            zxpPath,
+            src,
+            cepConfig.copyMetaAssets
+          );
+        }
       }
     },
     async generateBundle(output: any, bundle: any) {
