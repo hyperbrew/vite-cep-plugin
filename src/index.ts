@@ -337,7 +337,7 @@ export const cep = (opts: CepOptions) => {
             zipDir,
             zxpPath,
             src,
-            cepConfig.copyMetaAssets
+            cepConfig.copyZipAssets
           );
         }
       }

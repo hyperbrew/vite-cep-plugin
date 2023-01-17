@@ -122,7 +122,7 @@ export interface CEP_Config {
   };
   installModules?: string[];
   copyAssets?: string[];
-  copyMetaAssets?: string[];
+  copyZipAssets?: string[];
 }
 
 export interface CEP_Config_Extended extends CEP_Config {

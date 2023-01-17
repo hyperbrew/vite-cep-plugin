@@ -1,6 +1,6 @@
 {
   "name": "vite-cep-plugin",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "A Vite Plugin for building Adobe CEP Extension Panels",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,7 +13,8 @@
   "scripts": {
     "build": "tsc && ts-node scripts/copy-files.ts",
     "prepare": "npm run build",
-    "publish": "npm publish --access public"
+    "publish": "npm publish --access public",
+    "publish-beta": "npm publish --access public --tag beta"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
