@@ -26,4 +26,5 @@ export const signZXP = (
   execSync(signPrepStr, { cwd: cwdDir, encoding: "utf-8" });
   execSync(signStr, { cwd: cwdDir, encoding: "utf-8" });
   log("built zxp", true, output);
+  return output;
 };
