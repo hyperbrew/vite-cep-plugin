@@ -65,7 +65,7 @@ export const copyModules = ({
     const fullDstPath = path.join(process.cwd(), dest, "node_modules", pkg);
     fs.ensureDirSync(path.dirname(fullDstPath));
     if (!symlink) {
-      fs.copySync(fullSrcPath, fullDstPath);
+      fs.copySync(fullSrcPath, fullDstPath, {dereference: true});
     } else {
       fs.ensureSymlink(fullSrcPath, fullDstPath, "dir");
     }
