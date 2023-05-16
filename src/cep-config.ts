@@ -50,7 +50,12 @@ type CEF_Command =
   | "--v=4"
   | "--v=5";
 
-type CEP_Panel_Type = "Panel" | "ModalDialog" | "Modeless" | "Custom";
+type CEP_Panel_Type =
+  | "Panel"
+  | "ModalDialog"
+  | "Modeless"
+  | "Custom"
+  | "Embedded";
 
 export interface CEP_Panel {
   mainPath: string;
