@@ -15,6 +15,10 @@ type CEP_Host_Name =
   | "DRWV"
   | "KBRG"
   | "AME"
+  | "MUSE"
+  | "LTRM"
+  | "DEMO"
+  | "BRDG"
   | "RUSH";
 
 type CEP_Host = {
@@ -69,6 +73,7 @@ export interface CEP_Panel {
   minWidth?: number;
   minHeight?: number;
   scriptPath?: string;
+  host?: string;
   type?: CEP_Panel_Type;
   id?: string;
   iconDarkNormal?: string;

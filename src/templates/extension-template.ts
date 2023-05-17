@@ -7,6 +7,7 @@ export const extensionTemplate = ({
   autoVisible,
   mainPath,
   type,
+  host,
   panelDisplayName,
   width,
   height,
@@ -21,7 +22,7 @@ export const extensionTemplate = ({
   scriptPath,
   startOnEvents,
 }: CEP_Extended_Panel) => `<Extension Id="${id}">
-<DispatchInfo>
+<DispatchInfo${host ? ` Host="${host}"` : ""}>
   <Resources>
     <MainPath>${mainPath}</MainPath>${
   (scriptPath && `<ScriptPath>${scriptPath}</ScriptPath>`) || ""

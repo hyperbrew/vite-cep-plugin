@@ -59,12 +59,12 @@ const makeSymlink = (dist: string, dest: string) => {
         fs.unlinkSync(dest);
       }
     }
-    fs.mkdirSync(path.dirname(dest), {recursive: true});
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.symlinkSync(dist, dest, "junction");
     log("symlink created", true);
     return "created";
   } catch (e) {
-    console.log(e)
+    console.log(e);
     log("symlink failed. Try running 'sudo yarn symlink'", false);
     return "error";
   }
@@ -364,6 +364,7 @@ export const cep = (opts: CepOptions) => {
               autoVisible: newProps.autoVisible,
               mainPath: newProps.mainPath,
               type: newProps.type,
+              host: newProps.host,
               panelDisplayName: newProps.panelDisplayName,
               width: newProps.width,
               height: newProps.height,
