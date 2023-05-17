@@ -8,9 +8,12 @@ export const manifestTemplate = (props: CEP_Config_Extended) => {
     version,
     hosts,
     requiredRuntimeVersion,
+    standalone,
     panels,
   } = props;
-  return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+  return `<?xml version="1.0" encoding="UTF-8" standalone="${
+    standalone ? "yes" : "no"
+  }"?>
 <ExtensionManifest
     Version="${extensionManifestVersion.toFixed(1)}" 
     ExtensionBundleId="${id}"

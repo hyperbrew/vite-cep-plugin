@@ -31,6 +31,8 @@ export type JSXBIN_MODE = "off" | "copy" | "replace";
 type CEF_Command =
   | "--enable-media-stream"
   | "--enable-speech-input"
+  | "--enable-file-cookies"
+  | "--enable-nodejs"
   | "--persist-session-cookies"
   | "--disable-image-loading"
   | "--disable-javascript-open-windows"
@@ -40,7 +42,6 @@ type CEF_Command =
   | "--proxy-auto-detect"
   | "--user-agent"
   | "--disable-application-cache"
-  | "--enable-nodejs"
   | "--disable-pinch"
   | "--mixed-context"
   | "--allow-file-access"
@@ -114,6 +115,7 @@ export interface CEP_Config {
   maxHeight?: number;
   minWidth?: number;
   minHeight?: number;
+  standalone?: boolean;
 
   panels: CEP_Panel[];
 
