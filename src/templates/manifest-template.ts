@@ -24,6 +24,7 @@ export const manifestTemplate = (props: CEP_Config_Extended) => {
   <ExtensionList>
     ${panels
       .map((panel) => `<Extension Id="${panel.id}" Version="${version}" />`)
+      .filter((value, index, self) => self.indexOf(value) === index) // remove duplicates
       .join("")}
 	</ExtensionList>
 	<ExecutionEnvironment>
@@ -41,7 +42,6 @@ export const manifestTemplate = (props: CEP_Config_Extended) => {
 	</ExecutionEnvironment>
 	<DispatchInfoList>${panels
     .map((panel) => extensionTemplate(panel))
-    .filter((value, index, self) => self.indexOf(value) === index) // remove duplicates
     .join("")}</DispatchInfoList>
 	</ExtensionManifest>`;
 };
