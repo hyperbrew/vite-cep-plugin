@@ -73,3 +73,9 @@ export const removeModuleTags = (code: string) => {
   code = code.replace(/\<script type=\"module\" (.*)\>/g, "");
   return code;
 };
+
+export const pause = (ms: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(""), ms);
+  });
+};

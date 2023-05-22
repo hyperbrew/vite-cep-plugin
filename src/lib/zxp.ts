@@ -3,10 +3,11 @@ import * as path from "path";
 import * as child_process from "child_process";
 const { execSync } = child_process;
 
-import { removeIfExists, safeCreate, log } from "./lib";
+import { removeIfExists, safeCreate, log, pause } from "./lib";
 import { CEP_Config } from "../cep-config";
+import { existsSync, readdirSync } from "fs";
 
-export const signZXP = (
+export const signZXP = async (
   config: CEP_Config,
   input: string,
   zxpDir: string,
@@ -23,7 +24,17 @@ export const signZXP = (
 
   removeIfExists(output);
   safeCreate(zxpDir);
+  console.log({ signPrepStr });
   execSync(signPrepStr, { cwd: cwdDir, encoding: "utf-8" });
+  console.log({ signStr });
+
+  const jsx = path.join(input, "jsx");
+  let waits = 1;
+  while (!existsSync(jsx) || readdirSync(jsx).length === 0) {
+    console.log(`waiting for ExtendScript to finish... ${100 * waits++}ms`);
+    await pause(100);
+  }
+
   execSync(signStr, { cwd: cwdDir, encoding: "utf-8" });
   log("built zxp", true, output);
   return output;

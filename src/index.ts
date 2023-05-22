@@ -327,7 +327,7 @@ export const cep = (opts: CepOptions) => {
 
       // console.log("FINISH");
       if (isPackage) {
-        const zxpPath = signZXP(
+        const zxpPath = await signZXP(
           cepConfig,
           path.join(dir, cepDist),
           zxpDir,
