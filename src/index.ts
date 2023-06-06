@@ -33,6 +33,7 @@ export type { CEP_Config };
 import { nodeBuiltIns } from "./lib/node-built-ins";
 import MagicString from "magic-string";
 import { metaPackage } from "./lib/zip";
+import { packageSync } from "./lib/package-sync";
 
 const homedir = os.homedir();
 const tmpDir = path.join(__dirname, ".tmp");
@@ -633,6 +634,9 @@ export const runAction = (opts: CepOptions, action: string) => {
     makeSymlink(symlinkSrc, symlinkDst);
   } else if (action === "delsymlink") {
     removeSymlink(symlinkSrc, symlinkDst);
+  } else if (action === "dependencyCheck") {
+    console.log("Checking Dependencies");
+    packageSync();
   } else {
     console.warn(`Unknown Action: ${action}`);
   }
