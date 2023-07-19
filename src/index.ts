@@ -34,6 +34,8 @@ import { nodeBuiltIns } from "./lib/node-built-ins";
 import MagicString from "magic-string";
 import { metaPackage } from "./lib/zip";
 import { packageSync } from "./lib/package-sync";
+import {readdir} from "fs/promises";
+import {resolve} from "path";
 
 const homedir = os.homedir();
 const tmpDir = path.join(__dirname, ".tmp");
@@ -48,6 +50,20 @@ const ccLocalExtensionFolder =
   os.platform() == "win32"
     ? path.join(homedir, "/AppData/Roaming/Adobe/CEP/extensions")
     : path.join(homedir, `/Library/Application Support/Adobe/CEP/extensions`);
+
+const removeZeroByteFiles = async (dir: string)=> {
+  const dirents = await readdir(dir, { withFileTypes: true });
+  for (const dirent of dirents) {
+    const res = resolve(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      await removeZeroByteFiles(res);
+    } else {
+      if ((await fs.stat(res)).size == 0) {
+        await fs.unlink(res);
+      }
+    }
+  }
+}
 
 const makeSymlink = (dist: string, dest: string) => {
   try {
@@ -326,11 +342,12 @@ export const cep = (opts: CepOptions) => {
         });
       }
 
-      // console.log("FINISH");
+      const input = path.join(dir, cepDist);
+      await removeZeroByteFiles(input);
       if (isPackage) {
         const zxpPath = await signZXP(
           cepConfig,
-          path.join(dir, cepDist),
+          input,
           zxpDir,
           tmpDir
         );
