@@ -220,8 +220,9 @@ export const cep = (opts: CepOptions) => {
       }
 
       const matches = newCode.match(
-        /(\=require\(\"\.([A-z]|[0-9]|\.|\/|\-)*\"\)(\;|\,))/g
+        /(require\(\"\.([A-z]|[0-9]|\.|\/|\-)*\"\)(\;|\,|\)))/g
       );
+      console.log(`REQUIRE USED ${matches?.length} times!`);
       matches?.map((match: string) => {
         const jsPath = match.match(/\".*\"/);
         //@ts-ignore
@@ -229,7 +230,7 @@ export const cep = (opts: CepOptions) => {
         if (jsPath) {
           newCode = newCode.replace(
             match.substring(0, match.length - 1),
-            `=typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename})`
+            `typeof cep_node !== 'undefined'?cep_node.require(cep_node.global["__dir"+"name"] + "/assets/${jsBasename}):require("../assets/${jsBasename})`
           );
         }
       });
