@@ -222,7 +222,7 @@ export const cep = (opts: CepOptions) => {
       const matches = newCode.match(
         /(require\(\"\.([A-z]|[0-9]|\.|\/|\-)*\"\)(\;|\,|\)))/g
       );
-      console.log(`REQUIRE USED ${matches?.length} times!`);
+      // console.log(`REQUIRE USED ${matches?.length} times!`);
       matches?.map((match: string) => {
         const jsPath = match.match(/\".*\"/);
         //@ts-ignore
