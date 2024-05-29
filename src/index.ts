@@ -236,7 +236,7 @@ export const cep = (opts: CepOptions) => {
       });
       newCode = newCode.replace(
         `"use strict"`,
-        `"use strict"\rif (typeof exports === 'undefined') { var exports = {}; }`
+        `"use strict";var exports = typeof exports === "undefined" ? {} : exports;`
       );
       opts.bundle[jsName].code = newCode;
 
