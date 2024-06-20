@@ -4,7 +4,6 @@ import * as path from "path";
 import { Plugin } from "rollup";
 
 import { copyFiles, copyModules, unique } from "./copy-node";
-const jsxbin = require("jsxbin");
 
 import * as fs from "fs-extra";
 const prettifyXml = require("prettify-xml");
@@ -658,6 +657,7 @@ export const jsxBin = (jsxBinMode?: JSXBIN_MODE) => {
           const tmpSrc = fs.writeFileSync(srcFilePathTmp, bundle[esFile].code, {
             encoding: "utf-8",
           });
+          const jsxbin = require("jsxbin");
           await jsxbin(srcFilePathTmp, dstFilePathTmp);
           const output = fs.readFileSync(dstFilePathTmp, { encoding: "utf-8" });
           const jsxBinFile = {
