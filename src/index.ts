@@ -289,7 +289,25 @@ export const cep = (opts: CepOptions) => {
           //@ts-ignore
           const filePath = config.build.rollupOptions.input[key];
           const relativePath = path.relative(config.root, filePath);
-          const destPath = path.resolve(config.build.outDir, relativePath);
+          
+          const standardPath = ''
+          
+          const folderFix = (folder: string) => {
+            console.log('folder fix triggered.')
+            const dummy = 'dummy-non-existing-folder';
+            const defaultDir = 'dist/cep/';
+            if (folder == dummy) {
+                console.log('Dummy folder detected.');
+                return 'dist/cep/';
+            }
+            else {
+                console.log('Dummy not detected. returning folder: ' + folder);
+                return folder;
+            }
+        };
+          
+
+          const destPath = path.resolve(folderFix(config.build.outDir), relativePath);
           const panelHtmlFile = {
             type: "asset",
             source: devHtmlTemplate({
