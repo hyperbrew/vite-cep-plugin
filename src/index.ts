@@ -315,7 +315,7 @@ export const cep = (opts: CepOptions) => {
       // console.log(" BUILD END");
       const root = "./";
       const src = "./src";
-      const dest = path.join(dir, cepDist);
+      const dest = `dist/${cepDist}`;
       const symlink = false;
       const allPackages = unique(packages.concat(foundPackages));
       copyModules({ packages: allPackages, src: root, dest, symlink });
