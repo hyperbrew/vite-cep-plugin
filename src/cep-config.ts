@@ -38,6 +38,7 @@ type CEF_Command =
   | "--disable-javascript-open-windows"
   | "--disable-javascript-close-windows"
   | "--disable-javascript-access-clipboard"
+  | "--disable-site-isolation-trials"
   | "--enable-caret-browsing"
   | "--proxy-auto-detect"
   | "--user-agent"
