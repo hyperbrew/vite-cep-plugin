@@ -128,7 +128,7 @@ export interface CEP_Config {
     province: string;
     org: string;
     password: string;
-    tsa: string;
+    tsa?: string;
     sourceMap?: boolean;
     jsxBin?: JSXBIN_MODE;
   };

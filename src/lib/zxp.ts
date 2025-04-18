@@ -19,7 +19,14 @@ export const signZXP = async (
   const output = path.join(zxpDir, `${name}.zxp`);
   const certPath = path.join(tmpDir, `${name}-cert.p12`);
   const signPrepStr = `${zxpCmd} -selfSignedCert ${data.country} ${data.province} ${data.org} ${name} ${data.password} "${certPath}"`;
-  const signStr = `${zxpCmd} -sign "${input}" "${output}" "${certPath}" ${data.password} -tsa ${data.tsa}`;
+  let signStr = `${zxpCmd} -sign "${input}" "${output}" "${certPath}" ${data.password}`;
+  if (data.tsa && data.tsa !== "") {
+    signStr += ` -tsa ${data.tsa}`;
+  } else {
+    console.warn(
+      "⚠️ . No TSA URL provided. The ZXP will not be timestamped meaning it will expire."
+    );
+  }
   const cwdDir = path.join(__dirname, "..", "bin");
 
   removeIfExists(output);
