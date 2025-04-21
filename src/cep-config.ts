@@ -45,6 +45,7 @@ type CEF_Command =
   | "--disable-pinch"
   | "--mixed-context"
   | "--allow-file-access"
+  | "--allow-file-access-from-files"
   | "--disable-popup-blocking"
   | "--aggressive-cache-discard"
   | "--winhttp-proxy-resolver"
@@ -128,7 +129,8 @@ export interface CEP_Config {
     province: string;
     org: string;
     password: string;
-    tsa?: string;
+    tsa?: string | string[];
+    allowSkipTSA?: boolean;
     sourceMap?: boolean;
     jsxBin?: JSXBIN_MODE;
   };

@@ -19,21 +19,12 @@ export const signZXP = async (
   const output = path.join(zxpDir, `${name}.zxp`);
   const certPath = path.join(tmpDir, `${name}-cert.p12`);
   const signPrepStr = `${zxpCmd} -selfSignedCert ${data.country} ${data.province} ${data.org} ${name} ${data.password} "${certPath}"`;
-  let signStr = `${zxpCmd} -sign "${input}" "${output}" "${certPath}" ${data.password}`;
-  if (data.tsa && data.tsa !== "") {
-    signStr += ` -tsa ${data.tsa}`;
-  } else {
-    console.warn(
-      "⚠️ . No TSA URL provided. The ZXP will not be timestamped meaning it will expire."
-    );
-  }
   const cwdDir = path.join(__dirname, "..", "bin");
 
   removeIfExists(output);
   safeCreate(zxpDir);
   console.log({ signPrepStr });
   execSync(signPrepStr, { cwd: cwdDir, encoding: "utf-8" });
-  console.log({ signStr });
 
   const jsx = path.join(input, "jsx");
   let waits = 1;
@@ -42,7 +33,53 @@ export const signZXP = async (
     await pause(100);
   }
 
-  execSync(signStr, { cwd: cwdDir, encoding: "utf-8" });
+  let signStr = `${zxpCmd} -sign "${input}" "${output}" "${certPath}" ${data.password}`;
+
+  let numTSAs = 0;
+  if (data.tsa) {
+    if (typeof data.tsa === "string") {
+      if (data.tsa !== "") {
+        numTSAs = 1;
+      }
+    } else if (typeof data.tsa === "object") {
+      numTSAs = data.tsa.filter((t) => t.length > 0).length;
+    }
+  }
+
+  let success = false;
+  let failures = 0;
+  for (let i = 0; i < numTSAs; i++) {
+    const currentTSA = Array.isArray(data.tsa) ? data.tsa[i] : data.tsa;
+    if (currentTSA === "") continue;
+    const finalSignStr = signStr + ` -tsa ${currentTSA}`;
+    console.log({ signStr });
+    try {
+      execSync(finalSignStr, { cwd: cwdDir, encoding: "utf-8" });
+      success = true;
+    } catch (error) {
+      console.warn(
+        `⚠️ - Error signing with TSA ${currentTSA}.`,
+        //@ts-ignore
+        error?.message
+      );
+      failures++;
+    }
+  }
+
+  if (!success) {
+    let reason = failures > 0 ? "TSA Signing Failed" : "No TSA URL provided";
+    if (config.zxp.allowSkipTSA) {
+      console.warn(
+        `⚠️ - ${reason}. The ZXP will be built without a TSA meaning it will expire.`
+      );
+      execSync(signStr, { cwd: cwdDir, encoding: "utf-8" });
+    } else {
+      throw new Error(
+        `⚠️ - ${reason}. Job aborted. To complete without a TSA, set allowSkipTSA to true in the config.`
+      );
+    }
+  }
+
   log("built zxp", true, output);
   return output;
 };
