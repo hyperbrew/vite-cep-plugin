@@ -1,5 +1,6 @@
 import * as os from "os";
 import * as path from "path";
+import * as fs from "fs";
 import * as child_process from "child_process";
 const { execSync } = child_process;
 
@@ -14,6 +15,18 @@ export const signZXP = async (
   tmpDir: string
 ) => {
   const zxpCmd = os.platform() == "win32" ? `ZXPSignCmd` : `./ZXPSignCmd`;
+
+  if (os.platform() === 'darwin') {
+    const zxpsignCmdPath = path.join(__dirname, "..", "bin", "ZXPSignCmd");
+    const stat = fs.statSync(zxpsignCmdPath);
+    const isExecutable = (stat.mode & 0o111) !== 0;
+    if (!isExecutable) {
+      console.error("ZXPSignCmd is not executable. Changing permissions...");
+      fs.chmodSync(zxpsignCmdPath, stat.mode | 0o111);
+      console.log("ZXPSignCmd is now executable.");
+    }
+  }
+
   const name = config.id;
   const data = config.zxp;
   const output = path.join(zxpDir, `${name}.zxp`);
@@ -52,10 +65,11 @@ export const signZXP = async (
     const currentTSA = Array.isArray(data.tsa) ? data.tsa[i] : data.tsa;
     if (currentTSA === "") continue;
     const finalSignStr = signStr + ` -tsa ${currentTSA}`;
-    console.log({ signStr });
+    console.log({ finalSignStr });
     try {
       execSync(finalSignStr, { cwd: cwdDir, encoding: "utf-8" });
       success = true;
+      break;
     } catch (error) {
       console.warn(
         `⚠️ - Error signing with TSA ${currentTSA}.`,
