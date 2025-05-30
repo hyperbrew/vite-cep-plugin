@@ -48,6 +48,20 @@ const ccLocalExtensionFolder =
     ? path.join(homedir, "/AppData/Roaming/Adobe/CEP/extensions")
     : path.join(homedir, `/Library/Application Support/Adobe/CEP/extensions`);
 
+const removeZeroByteFiles = async (dir: string) => {
+  const dirents = await fs.readdir(dir, { withFileTypes: true });
+  for (const dirent of dirents) {
+    const res = path.resolve(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      await removeZeroByteFiles(res);
+    } else {
+      if ((await fs.stat(res)).size == 0) {
+        await fs.unlink(res);
+      }
+    }
+  }
+};
+
 const makeSymlink = (dist: string, dest: string) => {
   try {
     if (symlinkExists(dest)) {
@@ -326,14 +340,10 @@ export const cep = (opts: CepOptions) => {
         });
       }
 
-      // console.log("FINISH");
+      const input = path.join(dir, cepDist);
+      await removeZeroByteFiles(input);
       if (isPackage) {
-        const zxpPath = await signZXP(
-          cepConfig,
-          path.join(dir, cepDist),
-          zxpDir,
-          tmpDir
-        );
+        const zxpPath = await signZXP(cepConfig, input, zxpDir, tmpDir);
         if (isMetaPackage) {
           await metaPackage(
             cepConfig,
