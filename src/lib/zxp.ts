@@ -16,7 +16,7 @@ export const signZXP = async (
 ) => {
   const zxpCmd = os.platform() == "win32" ? `ZXPSignCmd` : `./ZXPSignCmd`;
 
-  if (os.platform() === 'darwin') {
+  if (os.platform() === "darwin") {
     const zxpsignCmdPath = path.join(__dirname, "..", "bin", "ZXPSignCmd");
     const stat = fs.statSync(zxpsignCmdPath);
     const isExecutable = (stat.mode & 0o111) !== 0;
@@ -34,6 +34,7 @@ export const signZXP = async (
   const signPrepStr = `${zxpCmd} -selfSignedCert ${data.country} ${data.province} ${data.org} ${name} ${data.password} "${certPath}"`;
   const cwdDir = path.join(__dirname, "..", "bin");
 
+  removeIfExists(certPath);
   removeIfExists(output);
   safeCreate(zxpDir);
   console.log({ signPrepStr });
